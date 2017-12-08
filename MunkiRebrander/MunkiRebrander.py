@@ -168,7 +168,7 @@ class MunkiRebrander(Processor):
         temp_dir = mkdtemp()
         iconset = os.path.join(temp_dir, 'AppIcns.iconset')
         icns = os.path.join(temp_dir, 'AppIcns.icns')
-        self.output('Converting %s to .icns...')
+        self.output('Converting %s to .icns...' % png)
         os.mkdir(iconset)
         for hw, suffix in ICON_SIZES:
             cmd = [SIPS, '-z', hw, hw, png,
