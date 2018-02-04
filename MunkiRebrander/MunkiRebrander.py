@@ -181,54 +181,47 @@ class MunkiRebrander(Processor):
         return icns
 
     def main(self):
-        path = self.env['unpacked_path']
-        app_name = self.env['app_name']
-        self.output("Rebranding %s with app name %s" % (path,
-                                                        app_name))
-        # Find the lproj directories in the apps' Resources dirs
-        for app in APPS:
-            resources_dir = os.path.join(path,
-                                            app['path'])
-            # Get a list of all the lproj dirs in each app's Resources dir
-            lproj_dirs = glob.glob(os.path.join(resources_dir, '*.lproj'))
-            for lproj_dir in lproj_dirs:
-                # Determine lang code
-                code = os.path.basename(lproj_dir).split('.')[0]
-                # Don't try to change anything we don't know about
-                if code in APPNAME_LOCALIZED.keys():
-                    for root, dirs, files in os.walk(lproj_dir):
-                        for file_ in files:
-                            lfile = os.path.join(root, file_)
-                            if fnmatch.fnmatch(lfile, '*.strings'):
-                                self.replace_strings(lfile, code, app_name)
-                            if fnmatch.fnmatch(lfile, '*.nib'):
-                                self.replace_nib(lfile, code, app_name)
-            if 'icon_file' in self.env:
-                icon_file = self.env['icon_file']
-                if os.path.exists(icon_file):
-                    if fnmatch.fnmatch(icon_file, '*.png'):
-                        icon_file = self.convert_to_icns(
-                            icon_file,
-                            self.env['RECIPE_CACHE_DIR']
+        if "unpacked_path" in self.env and "app_name" in self.env:
+            path = self.env['unpacked_path']
+            app_name = self.env['app_name']
+            self.output("Rebranding %s with app name %s" % (path,
+                                                            app_name))
+            # Find the lproj directories in the apps' Resources dirs
+            for app in APPS:
+                resources_dir = os.path.join(path,
+                                             app['path'])
+                # Get a list of all the lproj dirs in each app's Resources dir
+                lproj_dirs = glob.glob(os.path.join(resources_dir, '*.lproj'))
+                for lproj_dir in lproj_dirs:
+                    # Determine lang code
+                    code = os.path.basename(lproj_dir).split('.')[0]
+                    # Don't try to change anything we don't know about
+                    if code in APPNAME_LOCALIZED.keys():
+                        for root, dirs, files in os.walk(lproj_dir):
+                            for file_ in files:
+                                lfile = os.path.join(root, file_)
+                                if fnmatch.fnmatch(lfile, '*.strings'):
+                                    self.replace_strings(lfile, code, app_name)
+                                if fnmatch.fnmatch(lfile, '*.nib'):
+                                    self.replace_nib(lfile, code, app_name)
+                if 'icon_file' in self.env:
+                    icon_file = self.env['icon_file']
+                    if os.path.exists(icon_file):
+                        if fnmatch.fnmatch(icon_file, '*.png'):
+                            icon_file = self.convert_to_icns(
+                                icon_file,
+                                self.env['RECIPE_CACHE_DIR']
+                            )
+                        icon_path = os.path.join(app['path'], app['icon'])
+                        dest = os.path.join(path,
+                                            icon_path)
+                        self.output(
+                            "Replacing icons with %s in %s..." % (icon_file,
+                                                                  dest)
                         )
-                    icon_path = os.path.join(app['path'], app['icon'])
-                    dest = os.path.join(path,
-                                        icon_path)
-                    self.output(
-                        "Replacing icons with %s in %s..." % (icon_file,
-                                                                dest)
-                    )
-                    shutil.copyfile(icon_file, dest)
-                else:
-                    raise ProcessorError('%s does not exist!' % icon_file)
-
-        if 'postinstall' in self.env:
-            postinstall = self.env['postinstall']
-            dest = os.path.join(path, "Scripts/postinstall")
-            print "Copying %s to %s..." % (postinstall, dest)
-            shutil.copyfile(postinstall, dest)
-            # Make executable
-            os.chmod(dest, 01407)
+                        shutil.copyfile(icon_file, dest)
+                    else:
+                        raise ProcessorError('%s does not exist!' % icon_file)
 
 if __name__ == '__main__':
     PROCESSOR = MunkiRebrander

@@ -38,8 +38,6 @@ MUNKI_ICON should be overridden with your icon name.
         <string>Amazing Software Center</string>
         <key>ICON_REBRANDED</key>
         <string>%RECIPE_DIR%/Example.png</string>
-        <key>POSTINSTALL_SCRIPT</key>
-        <string>%RECIPE_DIR%/postinstall</string>
         <key>INCLUDE_PRERELEASES</key>
         <string></string>
         <key>NAME</key>
@@ -219,8 +217,6 @@ MUNKI_ICON should be overridden with your icon name.
             <string>%APP_NAME_REBRANDED%</string>
             <key>icon_file</key>
             <string>%ICON_REBRANDED%</string>
-            <key>postinstall</key>
-            <string>%POSTINSTALL_SCRIPT%</string>
           </dict>
         </dict>
         <dict>
